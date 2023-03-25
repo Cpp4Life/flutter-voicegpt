@@ -37,6 +37,7 @@ dependencies:
   provider: ^6.0.5
   flutter_svg: ^2.0.4
   chat_gpt_sdk: ^2.0.6
+  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:
