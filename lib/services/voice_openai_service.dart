@@ -26,6 +26,7 @@ class VoiceOpenAIService {
           completer.complete(result.recognizedWords);
         }
       },
+      localeId: 'en-US',
     );
     return completer.future;
   }
