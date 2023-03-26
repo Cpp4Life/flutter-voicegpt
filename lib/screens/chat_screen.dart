@@ -45,10 +45,12 @@ class ChatScreen extends StatelessWidget {
             Expanded(
               child: Consumer<ChatProvider>(
                 builder: (context, chatsData, _) => ListView.builder(
+                  reverse: true,
+                  shrinkWrap: true,
                   itemCount: chatsData.messages.length,
                   itemBuilder: (context, index) => ChatItemWidget(
-                    message: chatsData.messages[index].message,
-                    isUser: chatsData.messages[index].isUser,
+                    message: chatsData.reversedMessage[index].message,
+                    isUser: chatsData.reversedMessage[index].isUser,
                   ),
                 ),
               ),

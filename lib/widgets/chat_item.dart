@@ -50,10 +50,10 @@ class ChatItemWidget extends StatelessWidget {
             ),
             child: Text(
               message,
-              style: TextStyle(
-                fontSize: 12,
+              style: const TextStyle(
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onSecondary,
+                color: Colors.white,
               ),
             ),
           )

@@ -1,10 +1,8 @@
-import 'dart:developer';
-
 import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 
-class OpenAIService {
+class TextOpenAIService {
   final _openAI = OpenAI.instance.build(
-    token: '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',
+    token: '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',
     baseOption: HttpSetup(
       sendTimeout: const Duration(seconds: 30),
       connectTimeout: const Duration(seconds: 30),
@@ -27,9 +25,9 @@ class OpenAIService {
         return response.choices[0].message.content;
       }
       return 'Oops! Something went wrong';
-    } catch (e) {
-      debugger(message: '[ERROR] - $e');
-      return e.toString();
+    } catch (error) {
+      print(error.toString());
+      return 'Oops! Something went wrong';
     }
   }
 

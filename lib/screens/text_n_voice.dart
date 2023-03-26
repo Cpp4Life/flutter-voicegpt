@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:voicegpt/models/chat_model.dart';
 import 'package:voicegpt/providers/chat_provider.dart';
-import 'package:voicegpt/services/open_ai_service.dart';
+import 'package:voicegpt/services/text_openai_service.dart';
+import 'package:voicegpt/services/voice_openai_service.dart';
 
 enum InputMode {
   text,
@@ -18,10 +19,19 @@ class TextNVoiceWidget extends StatefulWidget {
 }
 
 class _TextNVoiceWidgetState extends State<TextNVoiceWidget> {
-  InputMode _inputMode = InputMode.voice;
-  late ChatProvider _chatPvd;
   final _msgController = TextEditingController();
-  OpenAIService _openAISvc = OpenAIService();
+  final TextOpenAIService _textOpenAISvc = TextOpenAIService();
+  final VoiceOpenAIService _voiceOpenAISvc = VoiceOpenAIService();
+  late ChatProvider _chatPvd;
+  InputMode _inputMode = InputMode.voice;
+  bool _isReplying = false;
+  bool _isListening = false;
+
+  @override
+  void initState() {
+    _voiceOpenAISvc.initSpeech();
+    super.initState();
+  }
 
   @override
   void didChangeDependencies() {
@@ -32,7 +42,7 @@ class _TextNVoiceWidgetState extends State<TextNVoiceWidget> {
   @override
   void dispose() {
     _msgController.dispose();
-    _openAISvc.dispose();
+    _textOpenAISvc.dispose();
     super.dispose();
   }
 
@@ -42,24 +52,70 @@ class _TextNVoiceWidgetState extends State<TextNVoiceWidget> {
     });
   }
 
-  void sendTextMessage() async {
-    final msg = _msgController.text;
-    _msgController.clear();
-    addToChatList(msg, true);
-    final response = await _openAISvc.getResponse(msg);
-    addToChatList(response, false);
+  void sendTextMessage(String msg) async {
+    setReplyingState(true);
+    addToChatList(msg, true, null);
+    addToChatList('Replying...', false, 'assistant-response');
+    setInputMode(InputMode.voice);
+    final response = await _textOpenAISvc.getResponse(msg);
+    removeFromChatList();
+    addToChatList(response, false, null);
+    setReplyingState(false);
   }
 
-  void sendVoiceMessage() {}
+  void sendVoiceMessage() async {
+    if (!_voiceOpenAISvc.isEnabled) {
+      await showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Access Permission'),
+          content: const Text('Microphone is not enabled for this application!'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop('OK');
+              },
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    if (_voiceOpenAISvc.speechToText.isListening) {
+      await _voiceOpenAISvc.stopListening();
+    } else {
+      setListeningState(true);
+      final result = await _voiceOpenAISvc.startListening();
+      setListeningState(false);
+      sendTextMessage(result);
+    }
+  }
 
-  void addToChatList(String msg, bool isUser) {
+  void setReplyingState(bool isRelying) {
+    setState(() {
+      _isReplying = isRelying;
+    });
+  }
+
+  void setListeningState(bool isListening) {
+    setState(() {
+      _isListening = isListening;
+    });
+  }
+
+  void addToChatList(String msg, bool isUser, String? id) {
     _chatPvd.addMessage(
       ChatModel(
-        id: const Uuid().v4(),
+        id: id ?? const Uuid().v4(),
         message: msg,
         isUser: isUser,
       ),
     );
+  }
+
+  void removeFromChatList() {
+    _chatPvd.removeMessage();
   }
 
   @override
@@ -78,6 +134,8 @@ class _TextNVoiceWidgetState extends State<TextNVoiceWidget> {
               },
               cursorColor: Theme.of(context).colorScheme.secondary,
               decoration: InputDecoration(
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     width: 2,
@@ -98,15 +156,27 @@ class _TextNVoiceWidgetState extends State<TextNVoiceWidget> {
             ),
           ),
           ElevatedButton(
-            onPressed: _inputMode == InputMode.text ? sendTextMessage : sendVoiceMessage,
+            onPressed: _isReplying
+                ? null
+                : () {
+                    final msg = _msgController.text;
+                    _msgController.clear();
+                    _inputMode == InputMode.text
+                        ? sendTextMessage(msg)
+                        : sendVoiceMessage();
+                  },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.secondary,
               foregroundColor: Theme.of(context).colorScheme.onSecondary,
               shape: const CircleBorder(),
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.all(10),
             ),
             child: Icon(
-              _inputMode == InputMode.text ? Icons.send : Icons.mic,
+              _inputMode == InputMode.text
+                  ? Icons.send
+                  : _isListening
+                      ? Icons.mic_off
+                      : Icons.mic,
             ),
           ),
         ],
