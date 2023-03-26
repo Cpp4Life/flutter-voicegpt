@@ -1,8 +1,9 @@
 import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class TextOpenAIService {
   final _openAI = OpenAI.instance.build(
-    token: '',
+    token: dotenv.env['TOKEN'],
     baseOption: HttpSetup(
       sendTimeout: const Duration(seconds: 30),
       connectTimeout: const Duration(seconds: 30),

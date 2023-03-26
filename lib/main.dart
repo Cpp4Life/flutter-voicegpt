@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:voicegpt/constants/themes.dart';
 import 'package:voicegpt/providers/chat_provider.dart';
 import 'package:voicegpt/providers/theme_provider.dart';
 import 'package:voicegpt/screens/chat_screen.dart';
 
-void main() {
+Future main() async {
+  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 
