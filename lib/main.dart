@@ -5,6 +5,7 @@ import 'package:voicegpt/constants/themes.dart';
 import 'package:voicegpt/providers/chat_provider.dart';
 import 'package:voicegpt/providers/theme_provider.dart';
 import 'package:voicegpt/screens/chat_screen.dart';
+import 'package:voicegpt/screens/setting_screen.dart';
 
 Future main() async {
   await dotenv.load(fileName: ".env");
@@ -35,6 +36,9 @@ class MyApp extends StatelessWidget {
             themeMode: value.isSwitched ? ThemeMode.dark : ThemeMode.light,
             debugShowCheckedModeBanner: false,
             home: const ChatScreen(),
+            routes: {
+              SettingScreen.routeName: (context) => const SettingScreen(),
+            },
           );
         },
       ),
