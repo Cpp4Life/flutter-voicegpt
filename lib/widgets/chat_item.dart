@@ -25,6 +25,7 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
   @override
   void initState() {
     _setAwaitOptions();
+    _setDeviceAudio();
     super.initState();
   }
 
@@ -50,6 +51,13 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
 
   Future _setAwaitOptions() async {
     await _tts.awaitSpeakCompletion(true);
+  }
+
+  Future _setDeviceAudio() async {
+    await _tts.setIosAudioCategory(
+      IosTextToSpeechAudioCategory.playback,
+      [IosTextToSpeechAudioCategoryOptions.defaultToSpeaker],
+    );
   }
 
   Future _pause() async {

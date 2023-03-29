@@ -89,6 +89,7 @@ class _TextNVoiceWidgetState extends State<TextNVoiceWidget> {
     }
     if (_voiceOpenAISvc.speechToText.isListening) {
       await _voiceOpenAISvc.stopListening();
+      setListeningState(false);
     } else {
       setListeningState(true);
       final result = await _voiceOpenAISvc.startListening();
