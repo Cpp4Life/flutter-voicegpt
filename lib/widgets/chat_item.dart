@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:provider/provider.dart';
+import 'package:voicegpt/providers/speech_lang_provider.dart';
 
 class ChatItemWidget extends StatefulWidget {
   final String message;
   final bool isUser;
-  final String locale;
 
   const ChatItemWidget({
     required this.message,
     required this.isUser,
-    this.locale = "en-US",
     super.key,
   });
 
@@ -21,6 +21,7 @@ class ChatItemWidget extends StatefulWidget {
 class _ChatItemWidgetState extends State<ChatItemWidget> {
   final _tts = FlutterTts();
   bool _isPlaying = false;
+  late SpeechLangProvider _speechLangPvd;
 
   @override
   void initState() {
@@ -30,13 +31,19 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
   }
 
   @override
+  void didChangeDependencies() {
+    _speechLangPvd = Provider.of<SpeechLangProvider>(context);
+    super.didChangeDependencies();
+  }
+
+  @override
   void dispose() {
     _tts.stop();
     super.dispose();
   }
 
   Future _speak(String msg) async {
-    await _tts.setLanguage(widget.locale);
+    await _tts.setLanguage(_speechLangPvd.lm.localeID);
     await _tts.setSpeechRate(0.5);
     await _tts.setVolume(1.0);
     await _tts.setPitch(1.0);

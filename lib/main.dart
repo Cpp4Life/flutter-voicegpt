@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:voicegpt/constants/themes.dart';
 import 'package:voicegpt/providers/chat_provider.dart';
+import 'package:voicegpt/providers/speech_lang_provider.dart';
 import 'package:voicegpt/providers/theme_provider.dart';
 import 'package:voicegpt/screens/chat_screen.dart';
 import 'package:voicegpt/screens/setting_screen.dart';
@@ -25,6 +26,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => ChatProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => SpeechLangProvider(),
         )
       ],
       child: Consumer<ThemeProvider>(

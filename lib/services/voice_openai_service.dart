@@ -5,6 +5,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 class VoiceOpenAIService {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
+  String _localeID = 'en-US';
 
   void initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
@@ -18,6 +19,10 @@ class VoiceOpenAIService {
     return _speechEnabled;
   }
 
+  void setLocaleID(String localeID) {
+    _localeID = localeID;
+  }
+
   Future<String> startListening() async {
     final completer = Completer<String>();
     _speechToText.listen(
@@ -26,7 +31,7 @@ class VoiceOpenAIService {
           completer.complete(result.recognizedWords);
         }
       },
-      localeId: 'en-US',
+      localeId: _localeID,
     );
     return completer.future;
   }

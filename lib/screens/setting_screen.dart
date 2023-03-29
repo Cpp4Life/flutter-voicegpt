@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:voicegpt/models/lang_model.dart';
 import 'package:voicegpt/providers/chat_provider.dart';
+import 'package:voicegpt/providers/speech_lang_provider.dart';
 import 'package:voicegpt/providers/theme_provider.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -15,26 +17,24 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  late List<Map<String, String>> _list;
-  late String _dropdownValue;
+  late List<LanguageModel> _list;
   late int _selectedIndex;
 
   @override
   void initState() {
     _list = [
-      {
-        'lang': 'English (US)',
-        'flag': 'assets/svg/us.svg',
-        'localeId': 'en-US',
-      },
-      {
-        'lang': 'Vietnamese',
-        'flag': 'assets/svg/vn.svg',
-        'localeId': 'vi-VN',
-      }
+      const LanguageModel(
+        lang: 'English (US)',
+        flagUrl: 'assets/svg/us.svg',
+        localeID: 'en-US',
+      ),
+      const LanguageModel(
+        lang: 'Vietnamese',
+        flagUrl: 'assets/svg/vn.svg',
+        localeID: 'vi-VN',
+      ),
     ];
     _selectedIndex = 0;
-    _dropdownValue = _list[_selectedIndex]['lang'] as String;
     super.initState();
   }
 
@@ -42,6 +42,7 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget build(BuildContext context) {
     final themePvd = Provider.of<ThemeProvider>(context, listen: false);
     final chatPvd = Provider.of<ChatProvider>(context, listen: false);
+    final speechLangPvd = Provider.of<SpeechLangProvider>(context);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
@@ -127,7 +128,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 child: ListTile(
                   minLeadingWidth: 10,
                   leading: SvgPicture.asset(
-                    _list[_selectedIndex]['flag'] as String,
+                    speechLangPvd.lm.flagUrl,
                     width: 30,
                     height: 30,
                     fit: BoxFit.cover,
@@ -140,7 +141,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     ),
                   ),
                   trailing: DropdownButton<String>(
-                    value: _dropdownValue,
+                    value: speechLangPvd.lm.lang,
                     underline: const SizedBox(),
                     style: TextStyle(
                       fontSize: 14,
@@ -149,14 +150,14 @@ class _SettingScreenState extends State<SettingScreen> {
                     onChanged: (String? value) {
                       setState(() {
                         _selectedIndex =
-                            _list.indexWhere((element) => element['lang'] == value);
-                        _dropdownValue = value!;
+                            _list.indexWhere((element) => element.lang == value);
                       });
+                      speechLangPvd.setSpeechLanguage(_list[_selectedIndex]);
                     },
                     items: _list.map((value) {
                       return DropdownMenuItem<String>(
-                        value: value['lang'],
-                        child: Text(value['lang']!),
+                        value: value.lang,
+                        child: Text(value.lang),
                       );
                     }).toList(),
                   ),
@@ -208,7 +209,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   'Delete all messages',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).colorScheme.onSecondary,
                   ),
                 ),
               ),

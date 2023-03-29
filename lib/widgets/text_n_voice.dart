@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:voicegpt/models/chat_model.dart';
 import 'package:voicegpt/providers/chat_provider.dart';
+import 'package:voicegpt/providers/speech_lang_provider.dart';
 import 'package:voicegpt/services/text_openai_service.dart';
 import 'package:voicegpt/services/voice_openai_service.dart';
 
@@ -24,6 +25,7 @@ class _TextNVoiceWidgetState extends State<TextNVoiceWidget> {
   final TextOpenAIService _textOpenAISvc = TextOpenAIService();
   final VoiceOpenAIService _voiceOpenAISvc = VoiceOpenAIService();
   late ChatProvider _chatPvd;
+  late SpeechLangProvider _speechLangPvd;
   InputMode _inputMode = InputMode.voice;
   bool _isReplying = false;
   bool _isListening = false;
@@ -37,6 +39,8 @@ class _TextNVoiceWidgetState extends State<TextNVoiceWidget> {
   @override
   void didChangeDependencies() {
     _chatPvd = Provider.of<ChatProvider>(context, listen: false);
+    _speechLangPvd = Provider.of<SpeechLangProvider>(context);
+    _voiceOpenAISvc.setLocaleID(_speechLangPvd.lm.localeID);
     super.didChangeDependencies();
   }
 
