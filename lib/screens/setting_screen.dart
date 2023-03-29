@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:voicegpt/providers/chat_provider.dart';
 import 'package:voicegpt/providers/theme_provider.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -39,6 +41,7 @@ class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     final themePvd = Provider.of<ThemeProvider>(context, listen: false);
+    final chatPvd = Provider.of<ChatProvider>(context, listen: false);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
@@ -168,9 +171,34 @@ class _SettingScreenState extends State<SettingScreen> {
             Container(
               margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () => showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => CupertinoAlertDialog(
+                    content: const Text('Are you sure you want to delete all messages?'),
+                    actions: <CupertinoDialogAction>[
+                      CupertinoDialogAction(
+                        isDefaultAction: true,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          'No',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
+                      CupertinoDialogAction(
+                        isDestructiveAction: true,
+                        onPressed: () {
+                          chatPvd.deleteAllMessages();
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Yes'),
+                      ),
+                    ],
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.zero,
+                  padding: const EdgeInsets.all(15),
                   backgroundColor: Theme.of(context).colorScheme.secondary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),

@@ -36,7 +36,7 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
 
   Future _speak(String msg) async {
     await _tts.setLanguage(widget.locale);
-    await _tts.setSpeechRate(0.55);
+    await _tts.setSpeechRate(0.5);
     await _tts.setVolume(1.0);
     await _tts.setPitch(1.0);
 

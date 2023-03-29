@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:voicegpt/models/chat_model.dart';
 
 class ChatProvider with ChangeNotifier {
-  final List<ChatModel> _messages = [];
+  List<ChatModel> _messages = [];
 
   List<ChatModel> get messages {
     return [..._messages];
@@ -19,6 +19,11 @@ class ChatProvider with ChangeNotifier {
 
   void removeMessage() {
     _messages.removeWhere((element) => element.id == 'assistant-response');
+    notifyListeners();
+  }
+
+  void deleteAllMessages() {
+    _messages = [];
     notifyListeners();
   }
 }

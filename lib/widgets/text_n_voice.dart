@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -67,15 +68,19 @@ class _TextNVoiceWidgetState extends State<TextNVoiceWidget> {
     if (!_voiceOpenAISvc.isEnabled) {
       await showDialog<String>(
         context: context,
-        builder: (BuildContext context) => AlertDialog(
+        builder: (BuildContext context) => CupertinoAlertDialog(
           title: const Text('Access Permission'),
           content: const Text('Microphone is not enabled for this application!'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
+          actions: <CupertinoDialogAction>[
+            CupertinoDialogAction(
+              isDefaultAction: true,
               onPressed: () {
-                Navigator.of(context).pop('OK');
+                Navigator.pop(context);
               },
+              child: const Text(
+                'OK',
+                style: TextStyle(color: Colors.blue),
+              ),
             ),
           ],
         ),
