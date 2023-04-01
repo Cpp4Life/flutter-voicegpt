@@ -5,6 +5,7 @@ import 'package:voicegpt/constants/themes.dart';
 import 'package:voicegpt/providers/chat_provider.dart';
 import 'package:voicegpt/providers/speech_lang_provider.dart';
 import 'package:voicegpt/providers/theme_provider.dart';
+import 'package:voicegpt/providers/tts_provider.dart';
 import 'package:voicegpt/screens/chat_screen.dart';
 import 'package:voicegpt/screens/setting_screen.dart';
 
@@ -29,6 +30,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => SpeechLangProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AutoTTSProvider(),
         )
       ],
       child: Consumer<ThemeProvider>(

@@ -6,6 +6,7 @@ import 'package:voicegpt/models/lang_model.dart';
 import 'package:voicegpt/providers/chat_provider.dart';
 import 'package:voicegpt/providers/speech_lang_provider.dart';
 import 'package:voicegpt/providers/theme_provider.dart';
+import 'package:voicegpt/providers/tts_provider.dart';
 
 class SettingScreen extends StatefulWidget {
   static const routeName = '/setting';
@@ -43,6 +44,7 @@ class _SettingScreenState extends State<SettingScreen> {
     final themePvd = Provider.of<ThemeProvider>(context, listen: false);
     final chatPvd = Provider.of<ChatProvider>(context, listen: false);
     final speechLangPvd = Provider.of<SpeechLangProvider>(context);
+    final autoTTSPvd = Provider.of<AutoTTSProvider>(context);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
@@ -112,8 +114,10 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                   trailing: Switch.adaptive(
                     activeColor: Theme.of(context).colorScheme.secondary,
-                    value: false,
-                    onChanged: (value) {},
+                    value: autoTTSPvd.isSwitched,
+                    onChanged: (value) {
+                      autoTTSPvd.toggleAutoTTS(value);
+                    },
                   ),
                 ),
               ),

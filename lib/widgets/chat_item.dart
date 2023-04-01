@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
 import 'package:voicegpt/providers/speech_lang_provider.dart';
+import 'package:voicegpt/providers/tts_provider.dart';
 
 class ChatItemWidget extends StatefulWidget {
   final String message;
@@ -22,6 +23,7 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
   final _tts = FlutterTts();
   bool _isPlaying = false;
   late SpeechLangProvider _speechLangPvd;
+  late AutoTTSProvider _autoTTSProvider;
 
   @override
   void initState() {
@@ -33,6 +35,7 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
   @override
   void didChangeDependencies() {
     _speechLangPvd = Provider.of<SpeechLangProvider>(context);
+    _autoTTSProvider = Provider.of<AutoTTSProvider>(context);
     super.didChangeDependencies();
   }
 
