@@ -70,9 +70,9 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
     );
   }
 
-  Future _pause() async {
+  Future _stop() async {
     setState(() => _isPlaying = false);
-    await _tts.pause();
+    await _tts.stop();
   }
 
   @override
@@ -132,7 +132,7 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
                       margin: const EdgeInsets.only(right: 5, left: 5),
                       child: ElevatedButton(
                         onPressed: () {
-                          _isPlaying ? _pause() : _speak(widget.message);
+                          _isPlaying ? _stop() : _speak(widget.message);
                         },
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.zero,
