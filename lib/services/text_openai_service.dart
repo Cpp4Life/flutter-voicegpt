@@ -11,7 +11,7 @@ class TextOpenAIService {
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
     ),
-    isLog: true,
+    isLog: false,
   );
 
   Future<String> getResponse(String message) async {

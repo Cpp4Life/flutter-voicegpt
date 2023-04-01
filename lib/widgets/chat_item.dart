@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
+import 'package:voicegpt/providers/chat_provider.dart';
 import 'package:voicegpt/providers/speech_lang_provider.dart';
 import 'package:voicegpt/providers/tts_provider.dart';
 
@@ -22,11 +23,12 @@ class ChatItemWidget extends StatefulWidget {
 class _ChatItemWidgetState extends State<ChatItemWidget> {
   final _tts = FlutterTts();
   bool _isPlaying = false;
+  late bool _isRead;
   late SpeechLangProvider _speechLangPvd;
-  late AutoTTSProvider _autoTTSProvider;
 
   @override
   void initState() {
+    _isRead = false;
     _setAwaitOptions();
     _setDeviceAudio();
     super.initState();
@@ -35,7 +37,6 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
   @override
   void didChangeDependencies() {
     _speechLangPvd = Provider.of<SpeechLangProvider>(context);
-    _autoTTSProvider = Provider.of<AutoTTSProvider>(context);
     super.didChangeDependencies();
   }
 
@@ -45,11 +46,15 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
     super.dispose();
   }
 
-  Future _speak(String msg) async {
+  Future _initDefaultTTSSettings() async {
     await _tts.setLanguage(_speechLangPvd.lm.localeID);
     await _tts.setSpeechRate(0.5);
     await _tts.setVolume(1.0);
     await _tts.setPitch(1.0);
+  }
+
+  Future _speak(String msg) async {
+    _initDefaultTTSSettings();
 
     if (msg.isNotEmpty) {
       setState(() => _isPlaying = true);
@@ -57,6 +62,12 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
     }
 
     setState(() => _isPlaying = false);
+  }
+
+  Future _autoSpeak(String msg) async {
+    _initDefaultTTSSettings();
+    await _tts.speak(msg);
+    setState(() => _isRead = true);
   }
 
   Future _setAwaitOptions() async {
@@ -77,6 +88,12 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final autoTTSProvider = Provider.of<AutoTTSProvider>(context);
+    if (!widget.isUser && autoTTSProvider.isSwitched) {
+      final chatPvd = Provider.of<ChatProvider>(context, listen: false);
+      final lastMsg = chatPvd.messages.last.message;
+      if (!_isRead && lastMsg != 'Replying...') _autoSpeak(lastMsg);
+    }
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       child: Row(
@@ -132,6 +149,7 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
                       margin: const EdgeInsets.only(right: 5, left: 5),
                       child: ElevatedButton(
                         onPressed: () {
+                          print(widget.message);
                           _isPlaying ? _stop() : _speak(widget.message);
                         },
                         style: ElevatedButton.styleFrom(
