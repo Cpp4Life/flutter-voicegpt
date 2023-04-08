@@ -8,8 +8,8 @@ class TextOpenAIService {
     token: dotenv.env['TOKEN'],
     baseOption: HttpSetup(
       sendTimeout: const Duration(seconds: 30),
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
+      connectTimeout: const Duration(seconds: 60),
+      receiveTimeout: const Duration(seconds: 60),
     ),
     isLog: false,
   );
@@ -30,18 +30,18 @@ class TextOpenAIService {
         maxToken: 1024,
       );
       final ChatCTResponse? response = await _openAI.onChatCompletion(request: request);
-      if (response != null) {
-        final responseMsg = response.choices[0].message;
-        final assistantInput = Map<String, String>.of(
-          {
-            "role": "assistant",
-            "content": responseMsg.content,
-          },
-        );
-        _history.add(assistantInput);
-        return responseMsg.content;
+      if (response == null) {
+        return 'Oops! Something went wrong';
       }
-      return 'Oops! Something went wrong';
+      final responseMsg = response.choices[0].message;
+      final assistantInput = Map<String, String>.of(
+        {
+          "role": "assistant",
+          "content": responseMsg.content,
+        },
+      );
+      _history.add(assistantInput);
+      return responseMsg.content;
     } catch (error) {
       print(error.toString());
       return 'Oops! Something went wrong';

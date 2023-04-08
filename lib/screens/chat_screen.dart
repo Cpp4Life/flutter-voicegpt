@@ -21,6 +21,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     _chatPvd = Provider.of<ChatProvider>(context, listen: false);
+    _chatPvd.fetchAndSetMessages();
     super.initState();
   }
 
@@ -62,38 +63,27 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           )
         ],
       ),
-      body: FutureBuilder(
-        future: Provider.of<ChatProvider>(context, listen: false).fetchAndSetMessages(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return Consumer<ChatProvider>(
-              builder: (context, chatsData, _) {
-                return Container(
-                  padding: const EdgeInsets.all(15),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                          reverse: true,
-                          shrinkWrap: true,
-                          itemCount: chatsData.messages.length,
-                          itemBuilder: (context, index) => ChatItemWidget(
-                            message: chatsData.reversedMessage[index].message,
-                            isUser: chatsData.reversedMessage[index].isUser,
-                          ),
-                        ),
-                      ),
-                      const TextNVoiceWidget(),
-                    ],
+      body: Consumer<ChatProvider>(
+        builder: (context, chatsData, _) {
+          return Container(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    reverse: true,
+                    shrinkWrap: true,
+                    itemCount: chatsData.messages.length,
+                    itemBuilder: (context, index) => ChatItemWidget(
+                      message: chatsData.reversedMessage[index].message,
+                      isUser: chatsData.reversedMessage[index].isUser,
+                    ),
                   ),
-                );
-              },
-            );
-          }
+                ),
+                const TextNVoiceWidget(),
+              ],
+            ),
+          );
         },
       ),
     );
