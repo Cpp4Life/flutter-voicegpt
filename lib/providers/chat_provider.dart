@@ -16,7 +16,7 @@ class ChatProvider with ChangeNotifier {
     return [..._messages.reversed.toList()];
   }
 
-  Future fetchAndSetOrders() async {
+  Future fetchAndSetMessages() async {
     try {
       final decodedJSON = await _storage.readMessages();
       if (decodedJSON == null) {
@@ -33,7 +33,7 @@ class ChatProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       log("🚀 ~ ChatProvider ~ FuturefetchAndSetOrders ~ ${e.toString()}");
-      rethrow;
+      _messages = [];
     }
   }
 

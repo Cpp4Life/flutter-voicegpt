@@ -63,15 +63,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         ],
       ),
       body: FutureBuilder(
-        future: Provider.of<ChatProvider>(context, listen: false).fetchAndSetOrders(),
+        future: Provider.of<ChatProvider>(context, listen: false).fetchAndSetMessages(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.error != null) {
-            return const Center(
-              child: Text('An error occurred'),
             );
           } else {
             return Consumer<ChatProvider>(

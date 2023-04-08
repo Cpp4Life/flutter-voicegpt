@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
@@ -23,7 +22,6 @@ class MessageStorage {
       final bytes = utf8.encode(contents);
       return jsonDecode(utf8.decode(bytes)) as List<dynamic>;
     } catch (e) {
-      log(e.toString());
       rethrow;
     }
   }
